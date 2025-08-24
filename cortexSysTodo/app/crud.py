@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session
 from . import models, schemas
 from datetime import datetime
+from typing import Optional
 from .security import hash_password
 # -------------------- User CRUD --------------------
 def create_user(db: Session, user: schemas.UserCreate):
@@ -20,7 +21,9 @@ def get_user_by_email(db: Session, email: str):
 def get_users(db: Session):
     return db.query(models.User).all()
 
-
+def get_user_by_username(db: Session, username: str):
+    return db.query(models.User).filter(models.User.username == username).first()
+ 
 # -------------------- Task CRUD --------------------
 #from .models import Task
 def create_task(db: Session, task: schemas.TaskCreate, user_id: int):
@@ -39,8 +42,16 @@ def create_task(db: Session, task: schemas.TaskCreate, user_id: int):
     db.refresh(db_task)
     return db_task
 
-def get_tasks_by_user(db: Session, user_id: int):
-    return db.query( models.Task).filter( models.Task.user_id == user_id).all()
+def get_tasks_by_user(db: Session, user_id: int,status: Optional[bool] = None, priority: Optional[int] = None):
+    query= db.query( models.Task).filter( models.Task.user_id == user_id)
+    if status is not None:
+        query = query.filter(models.Task.status == status)
+    
+    if priority is not None:
+        query = query.filter(models.Task.priority == priority)
+    
+    return query.all()
+
 #محدود کردن Taskها به صاحبش 
 
 
@@ -62,9 +73,25 @@ def update_task(db: Session, task_id: int, task: schemas.TaskCreate):
     return db_task
 
 
-def delete_task(db: Session, task_id: int):
-    db_task = db.query(Task).filter(Task.id == task_id).first()
+def delete_task(db: Session, task_id: int,user_id:int):
+    db_task = db.query(models.Task).filter(models.Task.id == task_id).first()
     if db_task:
         db.delete(db_task)
         db.commit()
     return db_task
+
+def toggle_task_status(db: Session, task_id: int, user_id: int):
+    """برعکس کردن وضعیت یک تسک"""
+    task = db.query(models.Task).filter(
+        models.Task.id == task_id,
+        models.Task.user_id == user_id
+    ).first()
+    
+    if not task:
+        return None
+
+    task.status = not task.status
+    db.commit()
+    db.refresh(task)
+    return task
+    

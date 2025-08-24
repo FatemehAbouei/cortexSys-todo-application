@@ -5,6 +5,7 @@ import secrets
 from .config import SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES
 
 
+print("SECRET_KEY:", SECRET_KEY)
 
 def create_access_token(user_id: int):
     """ساخت JWT Token با زمان انقضا"""

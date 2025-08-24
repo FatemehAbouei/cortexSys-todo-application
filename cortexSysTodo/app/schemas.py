@@ -17,6 +17,11 @@ class UserOut(BaseModel):
     created_at: datetime
     updated_at: Optional[datetime] = None  # ← اختیاری
 
+
+class UserLogin(BaseModel):
+    username: str
+    password: str 
+    
     class Config:
         orm_mode = True  # برای کار با SQLAlchemy
 
