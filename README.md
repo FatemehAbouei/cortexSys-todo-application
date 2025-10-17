@@ -11,7 +11,7 @@ A Task Management REST API built with FastAPI, supporting user authentication vi
 
 📦 Installation & Setup
 1. Clone the repository
-git clone https://github.com/yourusername/CortexTODO.git
+git clone
 cd CortexTODO
 
 2. Create and activate virtual environment
